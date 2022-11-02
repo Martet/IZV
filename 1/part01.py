@@ -1,12 +1,7 @@
 #!/usr/bin/env python3
 """
-IZV cast1 projektu
-Autor: Martin Zmitko (xzmitk01)
-
-Detailni zadani projektu je v samostatnem projektu e-learningu.
-Nezapomente na to, ze python soubory maji dane formatovani.
-
-Muzete pouzit libovolnou vestavenou knihovnu a knihovny predstavene na prednasce
+IZV project, part01
+Author: Martin Zmitko (xzmitk01)
 """
 
 
@@ -14,6 +9,7 @@ from bs4 import BeautifulSoup
 import requests
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.ticker import MultipleLocator
 from typing import List
 
 
@@ -79,7 +75,32 @@ def generate_sinus(show_figure: bool = False, save_path: str | None = None):
     :param show_figure: Show the graph on True
     :param save_path: Path to save the generated graph
     """
-    pass
+    t = np.linspace(0, 100, 5000)
+    f1 = 0.5 * np.sin(1 / 50 * np.pi * t)
+    f2 = 0.25 * np.sin(np.pi * t)
+    f3 = f1 + f2
+    f3_greater = np.ma.masked_less(f3, f1 - 0.01)
+    f3_less = np.ma.masked_greater(f3, f1 + 0.01)
+
+    fig, axes = plt.subplots(nrows=3, figsize=(6, 8))
+    for ax in axes:
+        ax.set_xlim(0, 100)
+        ax.set_ylim(-0.8, 0.8)
+        ax.set_xlabel(r"$t$")
+        ax.yaxis.set_major_locator(MultipleLocator(0.4))
+    axes[0].plot(t, f1)
+    axes[0].set_ylabel(r"$f_1(t)$")
+    axes[1].plot(t, f2)
+    axes[1].set_ylabel(r"$f_2(t)$")
+    axes[2].plot(t, f3_less, color="red")
+    axes[2].plot(t, f3_greater, color="green")
+    axes[2].set_ylabel(r"$f_1(t) + f_2(t)$")
+    fig.tight_layout()
+
+    if save_path is not None:
+        fig.savefig(save_path)
+    if show_figure:
+        fig.show()
 
 
 def download_data(url="https://ehw.fit.vutbr.cz/izv/temp.html"):
